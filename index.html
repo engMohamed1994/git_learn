@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download Shapefile Example</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- togeojson -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
+
+    <!-- shp-write -->
+    <script src="https://unpkg.com/@mapbox/shp-write@latest/shpwrite.js"></script>
+  </head>
+  <body>
+    <div id="map" style="height: 400px"></div>
+
+    <!-- Button for downloading Shapefile -->
+    <button onclick="downloadShapefile()">Download Shapefile</button>
+
+    <script>
+      // Your GeoJSON polygon
+      var polygonGeoJSON = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              id: 1,
+              name: 'Mohamed',
+            },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-0.1, 51.5],
+                  [-0.1, 51.51],
+                  [-0.09, 51.51],
+                  [-0.09, 51.5],
+                  [-0.1, 51.5],
+                ],
+              ],
+            },
+          },
+        ],
+      };
+
+      // Initialize the map
+      var map = L.map('map').setView([51.505, -0.09], 13);
+
+      // Add a tile layer (replace 'your_tile_url' with the actual tile URL)
+      L.tileLayer(
+        'https://mt0.google.com/vt/lyrs=y&hl=ar&x={x}&y={y}&z={z}'
+      ).addTo(map);
+
+      // Add your GeoJSON polygon layer to the map
+      var polygonLayer = L.geoJSON(polygonGeoJSON).addTo(map);
+
+      // Function to convert GeoJSON to Shapefile and trigger download
+      function downloadShapefile() {
+        // Convert GeoJSON to Shapefile format
+        const shpBlob = new Blob([shpwrite.zip(polygonGeoJSON)], {
+          type: 'application/zip',
+        });
+
+        // Create a download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(shpBlob);
+        downloadLink.download = 'output.zip';
+
+        // Simulate a click on the link to trigger the download
+        downloadLink.click();
+
+        /*
+        var shpBlob = shpwrite.zip(JSON.stringify(polygonGeoJSON));
+
+        // Create a Blob from the Shapefile data
+        var blob = new Blob([shpBlob], { type: 'application/zip' });
+
+        // Create a download link and trigger click
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'your_polygon_filename.zip';
+        link.click();*/
+      }
+    </script>
+  </body>
+</html>
